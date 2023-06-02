@@ -3,113 +3,88 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Dproduk;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
 
-class ProdukController extends Controller
+class DprodukController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $homepage = "BSTORE";
-        $deskripsi = "10% OFF YOUR ORDER";
-        $nama = [
-            'ARMY BOMB',
-            'PHOTO CARD',
-            'ALBUM',
-            'MERCHANDISE',
-            'TUMBLR'
-    ];
+    public function index() {
+
+        $dproduk= Dproduk::all();
+        return view ('tugaspert24.dproduk', compact('dproduk'));
+    } 
+
+    public function index2() {
+
+        $dproduk= Dproduk::all();
+        return view ('tugaske25.landing', compact('dproduk'));
+    } 
+
+    public function create() {
+        
+        return view ('tugaspert24.dproduk_create');
+    } 
+
+    public function store(Request $request) {
+
+        
+        $validator = Validator::make($request->all(), [
+            'name_product' => 'required|min:3' ,
+            'category' => 'required',
+            'price' => 'required|integer',
+        ]);
 
 
-    return view ('tugaspert23.landing', compact('namaprdct', 'deskripsi' ));
-    return view ('master.product', compact('nama' ));
+        if($validator->fails()){
+            return back()->withErrors($validator);
+        }
+
+        $dproduk= product::create([
+            'name_product' => $request -> nama_produk,
+            'kategori' => $request -> kategori,
+            'harga' => $request -> harga,
+        ]);
+       
+        return redirect ('/dproduk');
+    } 
+
+    public function edit($id) {
+
+        $dproduk= Dproduk::where('id', $id)->first();
+        
+        return view ('tugaspert24.dproduk_edit', compact('dproduk'));
+    } 
 
         
     }
 
-    public function index2()
-    {
+    public function update(Request $request) {
 
-    $kategori = [
-        'Alat elektronik',
-        'Kendaraan',
-        'Fashion',
-        'Alat Tulis Kantor',
-        'Kebutuhan Pokok'
-    ];
+        $validator = Validator::make($request->all(), [
+            'name_product' => 'required|min:3' ,
+            'category' => 'required',
+            'price' => 'required|integer',
+        ]);
 
-    $produk = [
-        'Army Bomb',
-        'Album MOTS',
-        'Album Proof',
-        'Merchandise',
-        'Tumblr',
-        'Photo card'
-    ];
 
-    $pengguna = [
-        'RM',
-        'JIN',
-        'YOONGI',
-        'JHOPE',
-        'JIMIN',
-        'TAEHYUNG',
-        'JUNGKOOK',
-    ];
-    
-    
-    
-    return view('tugaske23.dashboard', compact('kategori', 'produk', 'pengguna'));
+        if($validator->fails()){
+            return back()->withErrors($validator);
+        }
 
-        
-    }
+        $product= product::find($request->id)->update([
+            'name_product' => $request -> name_product,
+            'category' => $request -> category,
+            'price' => $request -> price,
+        ]);
+       
+        return redirect ('/product');
+    } 
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    public function delete($id) {
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+        $product= product::find($id)->delete();
+       
+        return redirect ('/product');
+    } 
 }
